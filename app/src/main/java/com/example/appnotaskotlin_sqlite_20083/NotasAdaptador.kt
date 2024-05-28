@@ -1,10 +1,13 @@
 package com.example.appnotaskotlin_sqlite_20083
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -30,16 +33,40 @@ class NotasAdaptador (
             holder.itemTitulo.text = nota.titulo
             holder.itemDescripcion.text = nota.descripcion
 
+            /* Evento para actualizar una nota */
+            holder.ivActualizar.setOnClickListener{
+                val intent = Intent(holder.itemView.context,
+                ActualizarNotaActivity::class.java).apply{
+                    putExtra("id_nota", nota.id) }
+
+                holder.itemView.context.startActivity(intent)
+                Toast.makeText(
+                    holder.itemView.context,
+                    "El id de la nota seleccionada es ${nota.id}",
+                    Toast.LENGTH_SHORT).show()
+            }
+
+        /* Evento para eliminar una nota */
+                holder.ivEliminar.setOnClickListener{
+                    db.deleteNota(nota.id)
+                    refrescarLista(db.getAllNotas())
+                    Toast.makeText(holder.itemView.context,
+                        "Nota eliminada", Toast.LENGTH_SHORT).show()
+                }
+
     }
 
             class NotaViewHolder(itemView: View) :  RecyclerView.ViewHolder(itemView){
                 val itemTitulo: TextView = itemView.findViewById(R.id.item_titulo)
                 val itemDescripcion: TextView = itemView.findViewById(R.id.item_descripion)
-            }
+                val ivActualizar : ImageView = itemView.findViewById(R.id.ivActualizar)
+                val ivEliminar : ImageView =  itemView.findViewById(R.id.ivEliminar)
 
-            fun refrescarLista (nuevaNota : List<Nota>){
-                notas = nuevaNota
-                notifyDataSetChanged()
-            }
+}
+
+fun refrescarLista (nuevaNota : List<Nota>){
+    notas = nuevaNota
+    notifyDataSetChanged()
+}
 
 }

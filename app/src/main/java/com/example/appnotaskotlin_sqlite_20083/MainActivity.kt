@@ -27,18 +27,12 @@ class MainActivity : AppCompatActivity() {
         binding.notasRv.adapter = notasAdaptador
 
         binding.FABAgregarNota.setOnClickListener{
-            //Toast.makeText(applicationContext,
-              //"Has presionado el boton",
-            //Toast.LENGTH_SHORT).show()
-
             startActivity(Intent(applicationContext, AgregarNotaActivity::class.java))
-
         }
     }
 
-    fun onResumen(){
+    override fun onResume(){
         super.onResume()
         notasAdaptador.refrescarLista(db.getAllNotas())
     }
-
 }

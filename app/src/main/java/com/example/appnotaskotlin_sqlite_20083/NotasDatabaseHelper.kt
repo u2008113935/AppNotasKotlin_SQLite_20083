@@ -10,7 +10,7 @@ class NotasDatabaseHelper (context: Context) : SQLiteOpenHelper(
 
     companion object{
         private const val DATABASE_NAME = "notas.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 3
         private const val TABLE_NAME = "notas"
         private const val COLUMN_ID = "id"
         private const val COLUMN_TITLE = "titulo"
@@ -63,6 +63,42 @@ class NotasDatabaseHelper (context: Context) : SQLiteOpenHelper(
         cursor.close()
         db.close()
         return listaNotas
-}
+        }
+
+    fun getIdNota(idNota : Int) : Nota{
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = $idNota"
+        val cursor = db.rawQuery(query, null)
+        cursor.moveToFirst()
+
+        val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
+        val titulo = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
+        val descripcion = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION))
+
+        cursor.close()
+        db.close()
+        return Nota(id, titulo, descripcion)
+    }
+
+    fun updateNota (nota : Nota) {
+            val db =  writableDatabase
+            val values = ContentValues().apply {
+                put (COLUMN_TITLE, nota.titulo)
+                put(COLUMN_DESCRIPTION, nota.descripcion)
+            }
+
+            val whereClause = "$COLUMN_ID = ?"
+            val whereArgs = arrayOf(nota.id.toString())
+            db.update(TABLE_NAME, values, whereClause, whereArgs)
+            db.close()
+        }
+
+        fun deleteNota(idNota: Int){
+            val db = writableDatabase
+            val whereClaus = "$COLUMN_ID = ?"
+            val whereArgs = arrayOf(idNota.toString())
+            db.delete(TABLE_NAME, whereClaus, whereArgs)
+            db.close()
+        }
 
 }
